@@ -18,7 +18,7 @@ export default function Header() {
           </Link>
         </div>
         <div className='flex-none gap-4 items-center justify-center'>
-          <Link href='/prompts'>Add Prompt</Link>
+          <Link href='/new'>Add Prompt</Link>
           <SwitchTheme />
           {!session && (
             <>

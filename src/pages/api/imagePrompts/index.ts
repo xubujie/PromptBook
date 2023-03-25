@@ -8,8 +8,13 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     res.status(405).json({ message: 'Method Not Allowed' })
     return
   }
-  console.log('req', req)
-  const imagePrompts = await prisma.imagePrompt.findMany()
-  console.log('imagePrompts', imagePrompts)
+  const page = parseInt(req.query.page as string) || 1
+  const perPage = 8 // Customize this value as needed
+
+  const imagePrompts = await prisma.imagePrompt.findMany({
+    skip: (page - 1) * perPage,
+    take: perPage,
+  })
+
   res.status(200).json(imagePrompts)
 }

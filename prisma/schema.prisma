@@ -128,11 +128,14 @@ model Like {
   id          String      @id @default(cuid())
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
-  imagePrompt      ImagePrompt   @relation(fields: [imagePromptId], references: [id], onDelete: Cascade)
-  imagePromptId    String
-  languagePrompt      LanguagePrompt   @relation(fields: [languagePromptId], references: [id], onDelete: Cascade)
-  languagePromptId    String
+  imagePrompt      ImagePrompt?   @relation(fields: [imagePromptId], references: [id], onDelete: Cascade)
+  imagePromptId    String?
+  languagePrompt      LanguagePrompt?   @relation(fields: [languagePromptId], references: [id], onDelete: Cascade)
+  languagePromptId    String?
   createdAt   DateTime @default(now())
+
+  @@unique([userId, imagePromptId])
+  @@unique([userId, languagePromptId])
 }
 
 model UserFollow {
