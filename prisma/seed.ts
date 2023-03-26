@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { imagePrompts } from '../data/prompts'
+import { langPrompts } from '../data/langPrompts'
 
 const prisma = new PrismaClient()
 
@@ -24,12 +25,16 @@ async function main() {
       create: user,
     })
   }
-
+  await prisma.prompt.deleteMany({})
   for (const prompt of imagePrompts) {
-    await prisma.imagePrompt.upsert({
-      where: { id: prompt.id },
-      update: prompt,
-      create: prompt,
+    await prisma.prompt.create({
+      data: { ...prompt, type: 'image' },
+    })
+  }
+
+  for (const prompt of langPrompts) {
+    await prisma.prompt.create({
+      data: { ...prompt, type: 'language' },
     })
   }
 }

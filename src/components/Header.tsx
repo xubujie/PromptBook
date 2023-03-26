@@ -11,14 +11,16 @@ export default function Header() {
 
   return (
     <header className='flex'>
-      <div className='navbar bg-base-100'>
-        <div className='flex-1'>
-          <Link href='/'>
-            <Image src='/logo-color.svg' alt='logo' width={60} height={60} />
+      <div className='navbar bg-base-100 justify-between items-center'>
+        <div>
+          <Link href='/' className='bg-primary text-white text-2xl font-semibold'>
+            PromptBook
           </Link>
         </div>
         <div className='flex-none gap-4 items-center justify-center'>
-          <Link href='/new'>Add Prompt</Link>
+          <Link href='/new' className='rounded-md'>
+            Add Prompt
+          </Link>
           <SwitchTheme />
           {!session && (
             <>
@@ -42,16 +44,12 @@ export default function Header() {
               </label>
               <ul
                 tabIndex={0}
-                className='mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52'
+                className='mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-40'
               >
                 <li>
-                  <a className='justify-between'>
-                    Profile
-                    <span className='badge'>New</span>
+                  <a href='/favorite' className='justify-between'>
+                    My favorite
                   </a>
-                </li>
-                <li>
-                  <a>Settings</a>
                 </li>
                 <li>
                   <a

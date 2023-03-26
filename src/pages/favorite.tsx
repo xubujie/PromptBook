@@ -6,10 +6,9 @@ import PromptCard from '@/components/PromptCard'
 import fetcher from '@/lib/fetcher'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import { InferGetServerSidePropsType, NextPageContext } from 'next'
-import SearchBar from '@/components/SearchBar'
 
 export const getServerSideProps = async (context: NextPageContext) => {
-  const data = await fetch('http://localhost:3000/api/prompts?limit=20', {
+  const data = await fetch('http://localhost:3000/api/like?limit=20', {
     headers: {
       cookie: context.req?.headers.cookie || '',
     },
@@ -24,7 +23,7 @@ export default function IndexPage(props: InferGetServerSidePropsType<typeof getS
   const [hasMore, setHasMore] = useState(true)
 
   const getMorePrompt = async () => {
-    const newPrompt = await fetcher(`/api/prompts?start=${prompt.length}&limit=20`)
+    const newPrompt = await fetcher(`/api/like?start=${prompt.length}&limit=20`)
     if (newPrompt.length === 0) {
       setHasMore(false)
     }
@@ -33,7 +32,6 @@ export default function IndexPage(props: InferGetServerSidePropsType<typeof getS
 
   return (
     <Layout>
-      <SearchBar />
       <InfiniteScroll
         dataLength={prompt.length}
         next={getMorePrompt}

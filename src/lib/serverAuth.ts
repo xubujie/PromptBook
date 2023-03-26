@@ -7,7 +7,7 @@ const serverAuth = async (req: NextApiRequest) => {
   if (!session?.user?.email) {
     return {
       redirect: {
-        destination: '/login',
+        destination: '/api/auth/signin',
         permanent: false,
       },
     }

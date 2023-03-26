@@ -9,18 +9,10 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     res.status(405).json({ message: 'Method not allowed' })
     return
   }
-  const { promptInput, negativePrompt, model, outputImage, imageWidth, imageHeight, authorId } =
-    req.body
-  const newImagePrompt = await prisma.imagePrompt.create({
-    data: {
-      promptInput,
-      negativePrompt,
-      model,
-      outputImage,
-      imageWidth,
-      imageHeight,
-      authorId,
-    },
+  const data = req.body
+  console.log('data', data)
+  const newPrompt = await prisma.prompt.create({
+    data,
   })
-  res.status(201).json(newImagePrompt)
+  res.status(201).json(newPrompt)
 }

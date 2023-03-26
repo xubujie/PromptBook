@@ -54,37 +54,38 @@ const ImagePromptForm: React.FC = () => {
     // Handle the form data, such as uploading the image, and creating a new prompt entry.
     // After successful submission, redirect to the prompt page.
     // call post request to create prompt
-    console.log('data', data)
     const file = data.image[0]
     const uniqueFileName = `${Date.now()}-${file.name}`
-    console.log('uniqueFileName', uniqueFileName)
     const { data: image, error } = await supabase.storage
       .from('promptbook')
-      .upload(`${session?.userId}/${uniqueFileName}`, data.image[0], {
+      .upload(`${session?.user?.email}/${uniqueFileName}`, data.image[0], {
         cacheControl: '3600',
         upsert: false,
       })
     if (error) {
-      console.log('error', error)
       toast.error('Image upload failed. Please try again.')
       return
     }
     const imageUrl = image?.path
     // post prompt to database
-    const res = await axios.post('/api/imagePrompts/new', {
-      promptInput: data.prompt,
+    const res = await axios.post('/api/new', {
+      prompt: data.prompt,
+      type: 'image',
       negativePrompt: data.nprompt,
       model: data.model,
-      outputImage:
+      image:
         process.env.NEXT_PUBLIC_SUPABASE_URL + '/storage/v1/object/public/promptbook/' + imageUrl,
       imageWidth: imageSize && imageSize[0],
       imageHeight: imageSize && imageSize[1],
-      authorId: session?.userId,
+      authorEmail: session?.user?.email,
     })
     if (res.status === 201) {
       // use toast to show success message
       toast.success('Prompt posted successfully!')
-      router.push('/')
+      // redirect to prompt page after message is shown
+      setTimeout(() => {
+        router.push('/')
+      }, 3000)
     } else {
       // use toast to show error message
       toast.error('Failed to post prompt. Please try again.')
@@ -94,7 +95,7 @@ const ImagePromptForm: React.FC = () => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className='container flex flex-col md:flex-row justify-center items-start mx-auto mb-10 space-x-10 text-white'
+      className='container flex flex-col md:flex-row justify-center items-start mx-auto mb-10 space-x-10'
     >
       <div className='container w-1/2'>
         <input
@@ -126,16 +127,16 @@ const ImagePromptForm: React.FC = () => {
           <img className='mx-auto self-center' src={imagePreviewUrl} alt='Image Preview' />
         )}
       </div>
-      <div className='container flex flex-col  w-1/2 space-y-5'>
+      <div className='container flex flex-col w-1/2 space-y-5'>
         <textarea
           {...register('prompt', { required: 'prompt is required', maxLength: 500 })}
-          className='textarea textarea-secondary w-full h-40 placeholder:text-white'
+          className='textarea textarea-secondary w-full h-40'
           placeholder='Enter prompt'
         />
         {errors.prompt && <div className='text-red-600 mt-1'>{errors.prompt.message}</div>}
         <textarea
           {...register('nprompt', { required: false, maxLength: 500 })}
-          className='textarea textarea-secondary w-full h-40 placeholder:text-white'
+          className='textarea textarea-secondary w-full h-40'
           placeholder='Negative prompt (optional)'
         />
         <select

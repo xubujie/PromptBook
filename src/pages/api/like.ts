@@ -2,22 +2,36 @@ import prisma from '@/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function handle(req: NextApiRequest, res: NextApiResponse) {
-  const { userId, imagePromptId, languagePromptId } = req.body
+  const { userEmail, promptId } = req.body
 
   if (req.method === 'GET') {
     try {
+      const start = parseInt(req.query.start as string) || 0
+      const limit = parseInt(req.query.limit as string) || 10
       const likes = await prisma.like.findMany({
         where: {
-          userId,
+          userEmail,
+        },
+        skip: start,
+        take: limit,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        include: {
+          prompt: true,
         },
       })
-      res.status(200).json(likes)
+      const prompts = likes.map((like) => ({
+        ...like.prompt,
+        likedByCurrentUser: true,
+      }))
+      res.status(200).json(prompts)
     } catch (error) {
       res.status(400).json({ message: 'Unable to get likes' })
     }
   } else if (req.method === 'POST') {
     try {
-      const data = { userId, imagePromptId, languagePromptId }
+      const data = { userEmail, promptId }
       console.log(data)
       const like = await prisma.like.create({ data })
       res.status(201).json(like)
@@ -26,26 +40,14 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
     }
   } else if (req.method === 'DELETE') {
     try {
-      let like
-      if (languagePromptId === undefined) {
-        like = await prisma.like.delete({
-          where: {
-            userId_imagePromptId: {
-              userId,
-              imagePromptId,
-            },
+      const like = await prisma.like.delete({
+        where: {
+          userEmail_promptId: {
+            userEmail,
+            promptId,
           },
-        })
-      } else {
-        like = await prisma.like.delete({
-          where: {
-            userId_languagePromptId: {
-              languagePromptId,
-              userId,
-            },
-          },
-        })
-      }
+        },
+      })
       res.status(200).json(like)
     } catch (error) {
       res.status(400).json({ message: 'Unable to delete like' })

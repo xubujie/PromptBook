@@ -19,10 +19,9 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  imagePrompts     ImagePrompt[]
-  languagePrompts     LanguagePrompt[]
+  prompts     Prompt[]
   comments    Comment[]
-  likes     Like[]
+  likes       Like[]
   followers   UserFollow[] @relation("Followers")
   following   UserFollow[] @relation("Following")
   createdAt   DateTime @default(now())
@@ -64,86 +63,53 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model ImagePrompt {
+model Prompt {
   id String @id @default(cuid())
-  promptInput String
+  title String?
+  type String  // image, language, etc
+  prompt String
+  model String?
   negativePrompt String?
-  model String
-  outputImage String
-  imageWidth Int
-  imageHeight Int
+  imageWidth Int?
+  imageHeight Int?
+  image  String?
+  link String?
   likes Like[]
   comments Comment[]
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId String
+  author User @relation(fields: [authorEmail], references: [email], onDelete: Cascade)
+  authorEmail String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
-model LanguagePrompt {
-  id String @id @default(cuid())
-  promptInput String
-  usage String
-  output String?
-  likes Like[]
-  comments Comment[]
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-// model Prompt {
-//   id          String      @id @default(cuid())
-//   // need to update to required
-//   promptInput     String?
-//   negativePrompt String?
-//   // need to update to required
-//   type       String?
-//   model       String? 
-//   output      String?
-//   image      String?
-//   upvotes     Upvote[]
-//   comments    Comment[]
-//   author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-//   authorId    String
-//   createdAt   DateTime @default(now())
-//   updatedAt   DateTime @updatedAt
-// }
 
 model Comment {
   id          String      @id @default(cuid())
   content     String
-  imagePrompt      ImagePrompt   @relation(fields: [imagePromptId], references: [id], onDelete: Cascade)
-  imagePromptId    String
-  languagePrompt      LanguagePrompt   @relation(fields: [languagePromptId], references: [id], onDelete: Cascade)
-  languagePromptId    String
-  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId    String
+  prompt      Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  promptId     String
+  author      User     @relation(fields: [authorEmail], references: [email], onDelete: Cascade)
+  authorEmail    String   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 model Like {
   id          String      @id @default(cuid())
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String
-  imagePrompt      ImagePrompt?   @relation(fields: [imagePromptId], references: [id], onDelete: Cascade)
-  imagePromptId    String?
-  languagePrompt      LanguagePrompt?   @relation(fields: [languagePromptId], references: [id], onDelete: Cascade)
-  languagePromptId    String?
+  user        User     @relation(fields: [userEmail], references: [email], onDelete: Cascade)
+  userEmail      String
+  prompt      Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  promptId    String
   createdAt   DateTime @default(now())
 
-  @@unique([userId, imagePromptId])
-  @@unique([userId, languagePromptId])
+  @@unique([userEmail, promptId])
 }
 
 model UserFollow {
   id           String      @id @default(cuid())
-  following         User     @relation("Following", fields: [followingId], references: [id])
-  followingId       String
-  follower     User     @relation("Followers", fields: [followerId], references: [id])
-  followerId   String
+  following         User     @relation("Following", fields: [followingEmail], references: [id])
+  followingEmail      String
+  follower     User     @relation("Followers", fields: [followerEmail], references: [id])
+  followerEmail   String
   createdAt    DateTime @default(now())
 }
 

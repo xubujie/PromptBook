@@ -5,7 +5,7 @@ import {
   TwitterShareButton,
   FacebookIcon,
   TwitterIcon,
-  LineShareButton,
+  LinkedinShareButton,
   LinkedinIcon,
 } from 'react-share'
 import useOnClickOutside from '../hooks/useOnClickOutside'
@@ -20,10 +20,10 @@ const ShareButton: React.FC = () => {
 
   useOnClickOutside(ref, () => setShowTooltip(false))
 
-  const urlToShare = 'https://example.com' // Replace with the URL you want to share
+  const urlToShare = 'https://localhost:3000' // Replace with the URL you want to share
 
   return (
-    <div className='relative' ref={ref}>
+    <div className='flex relative' ref={ref}>
       {showTooltip && (
         <div className='absolute -left-20 -mt-8 p-2 bg-base-100 shadow rounded flex space-x-3'>
           <FacebookShareButton url={urlToShare}>
@@ -32,9 +32,9 @@ const ShareButton: React.FC = () => {
           <TwitterShareButton url={urlToShare}>
             <TwitterIcon size={25} round />
           </TwitterShareButton>
-          <LineShareButton url={urlToShare}>
+          <LinkedinShareButton url={urlToShare}>
             <LinkedinIcon size={25} round />
-          </LineShareButton>
+          </LinkedinShareButton>
           {/* Add more share buttons from react-share here if needed */}
         </div>
       )}

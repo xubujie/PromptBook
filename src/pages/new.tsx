@@ -37,21 +37,21 @@ const Prompts: React.FC = (props: InferGetServerSidePropsType<typeof getServerSi
     <Layout>
       <div className='flex flex-col w-full lg:flex-row px-20'>
         <div
-          className={`grid flex-grow h-20 card ${
-            bgColor ? 'bg-base-300' : 'bg-primary'
-          } rounded-box place-items-center cursor-pointer hover:bg-primary hover:text-white`}
+          className={`text-white grid flex-grow h-20 card ${
+            bgColor ? 'bg-neutral' : 'bg-primary'
+          } rounded-box place-items-center cursor-pointer hover:bg-primary`}
           onClick={() => selectModel('image')}
         >
-          Image Model
+          Image Prompt
         </div>
         <div className='divider lg:divider-horizontal'>OR</div>
         <div
-          className={`grid flex-grow h-20 card ${
-            !bgColor ? 'bg-base-300' : 'bg-primary'
-          } rounded-box place-items-center cursor-pointer hover:bg-primary hover:text-white`}
+          className={`text-white grid flex-grow h-20 card ${
+            !bgColor ? 'bg-neutral' : 'bg-primary'
+          } rounded-box place-items-center cursor-pointer hover:bg-primary`}
           onClick={() => selectModel('language')}
         >
-          Language Model
+          Language Prompt
         </div>
       </div>
       <div className='divider'></div>
