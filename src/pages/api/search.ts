@@ -9,9 +9,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const searchQuery = req.query.q ? (req.query.q as string).toLowerCase() : ''
 
   const prompts = await prisma.prompt.findMany({
+    // where: {
+    //   type: (req.query.type as string) || 'image',
+    // },
     where: {
-      // if the query param is not present, no filtering will be applied
-      type: req.query.t !== 'all' ? (req.query.t as string) : undefined,
       OR: [{ title: { contains: searchQuery } }, { prompt: { contains: searchQuery } }],
     },
     skip: start,

@@ -20,7 +20,7 @@ export async function getServerSideProps(context: NextPageContext) {
   }
 }
 
-const Prompts: React.FC = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+export default function NewPage(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [selectedModel, setSelectedModel] = useState<string | null>('image')
   const [bgColor, setBgColor] = useState(false)
 
@@ -60,5 +60,3 @@ const Prompts: React.FC = (props: InferGetServerSidePropsType<typeof getServerSi
     </Layout>
   )
 }
-
-export default Prompts

@@ -1,5 +1,5 @@
 import InfiniteScroll from 'react-infinite-scroll-component'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
 import fetcher from '@/lib/fetcher'
 import { CARD_WIDTH } from '@/config/config'
@@ -8,22 +8,31 @@ import PromptCard from './PromptCard'
 interface Props {
   apiUrl: string
   data: any
+  searchQuery: string
+  category: 'all' | 'image' | 'language'
 }
 
-export default function PromptList({ apiUrl, data }: Props) {
-  const [prompt, setPrompt] = useState(data)
+export default function PromptList({ apiUrl, data, searchQuery, category }: Props) {
+  const [prompts, setPrompts] = useState([])
   const [hasMore, setHasMore] = useState(true)
-  const getMorePrompt = async () => {
-    const newPrompt = await fetcher(`${apiUrl}?start=${prompt.length}&limit=20`)
-    if (newPrompt.length === 0) {
+
+  useEffect(() => {
+    setPrompts(data)
+    setHasMore(true)
+  }, [data])
+
+  const fetchMorePrompts = async () => {
+    const start = prompts.length
+    const data = await fetcher(`${apiUrl}?q=${searchQuery}&t=${category}&start=${start}&limit=20`)
+    if (data.length === 0) {
       setHasMore(false)
     }
-    setPrompt((prompt: any) => [...prompt, ...newPrompt])
+    setPrompts((prompts) => [...prompts, ...data])
   }
   return (
     <InfiniteScroll
-      dataLength={prompt.length}
-      next={getMorePrompt}
+      dataLength={prompts.length}
+      next={fetchMorePrompts}
       hasMore={hasMore}
       loader={
         <div className='flex justify-center mt-10'>
@@ -39,8 +48,8 @@ export default function PromptList({ apiUrl, data }: Props) {
       <div className='container my-20 mx-auto max-x-6xl'>
         <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 3, 900: 4 }}>
           <Masonry gutter='15px'>
-            {prompt &&
-              prompt.map((item: any) => (
+            {prompts &&
+              prompts.map((item: any) => (
                 <div
                   key={item.id}
                   className={`card ${CARD_WIDTH} bg-netural shadow-xl items-center`}

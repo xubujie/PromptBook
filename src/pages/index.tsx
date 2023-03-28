@@ -1,12 +1,10 @@
 import Layout from '@/components/Layout'
-import React, { useState } from 'react'
-import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
-import { CARD_WIDTH } from '@/config/config'
-import PromptCard from '@/components/PromptCard'
-import fetcher from '@/lib/fetcher'
-import InfiniteScroll from 'react-infinite-scroll-component'
+import React, { useState, useCallback, useEffect } from 'react'
 import { InferGetServerSidePropsType, NextPageContext } from 'next'
 import SearchBar from '@/components/SearchBar'
+import PromptList from '@/components/PromptList'
+import fetcher from '@/lib/fetcher'
+import Selecter from '@/components/Selecter'
 
 export const getServerSideProps = async (context: NextPageContext) => {
   const data = await fetch('http://localhost:3000/api/prompts?limit=20', {
@@ -20,51 +18,55 @@ export const getServerSideProps = async (context: NextPageContext) => {
 }
 
 export default function IndexPage(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const [prompt, setPrompt] = useState(props.data)
-  const [hasMore, setHasMore] = useState(true)
+  const [prompts, setPrompts] = useState(props.data)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [category, setCategory] = useState('all' as 'all' | 'image' | 'language')
+  const [order, setOrder] = useState('recent' as 'recent' | 'weekly' | 'monthly')
+  const apiUrl = '/api/prompts'
+  const handleSearch = useCallback(async (query: string) => {
+    setSearchQuery(query)
+  }, [])
 
-  const getMorePrompt = async () => {
-    const newPrompt = await fetcher(`/api/prompts?start=${prompt.length}&limit=20`)
-    if (newPrompt.length === 0) {
-      setHasMore(false)
+  const handleSelect = useCallback(async (category: string, order: string) => {
+    setCategory(category as 'all' | 'image' | 'language')
+    setOrder(order as 'recent' | 'weekly' | 'monthly')
+  }, [])
+
+  useEffect(() => {
+    const fetchPrompts = async () => {
+      const data = await fetcher(`${apiUrl}?q=${searchQuery}&t=${category}&limit=20`)
+      setPrompts(data)
     }
-    setPrompt((prompt) => [...prompt, ...newPrompt])
-  }
+    fetchPrompts()
+  }, [searchQuery, category, order])
 
   return (
     <Layout>
-      <SearchBar />
-      <InfiniteScroll
-        dataLength={prompt.length}
-        next={getMorePrompt}
-        hasMore={hasMore}
-        loader={
-          <div className='flex justify-center mt-10'>
-            <p className='text-white text-xl'> Loading more...</p>
-          </div>
-        }
-        endMessage={
-          <div className='flex justify-center mt-10'>
-            <p className='text-white text-xl'> Nothing more to show...</p>
-          </div>
-        }
-      >
-        <div className='container my-20 mx-auto max-x-6xl'>
-          <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 3, 900: 4 }}>
-            <Masonry gutter='15px'>
-              {prompt &&
-                prompt.map((item) => (
-                  <div
-                    key={item.id}
-                    className={`card ${CARD_WIDTH} bg-netural shadow-xl items-center`}
-                  >
-                    <PromptCard {...item} />
-                  </div>
-                ))}
-            </Masonry>
-          </ResponsiveMasonry>
-        </div>
-      </InfiniteScroll>
+      <div className='flex flex-col mx-auto w-3/4 md:w-1/3'>
+        {/* <div className='tabs tabs-boxed justify-between'>
+          <a
+            className={`tab w-1/3 ${searchType === 'all' ? 'tab-active' : null}`}
+            onClick={() => setSearchType('all')}
+          >
+            All
+          </a>
+          <a
+            className={`tab w-1/3 ${searchType === 'image' ? 'tab-active' : null}`}
+            onClick={() => setSearchType('image')}
+          >
+            Image
+          </a>
+          <a
+            className={`tab w-1/3 ${searchType === 'language' ? 'tab-active' : null}`}
+            onClick={() => setSearchType('language')}
+          >
+            Language
+          </a>
+        </div> */}
+        <SearchBar onSearch={handleSearch} />
+        <Selecter onSelect={handleSelect} />
+      </div>
+      <PromptList data={prompts} apiUrl={apiUrl} searchQuery={searchQuery} category={category} />
     </Layout>
   )
 }

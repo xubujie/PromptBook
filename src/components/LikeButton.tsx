@@ -13,8 +13,6 @@ interface LikeButtonProps {
 
 const LikeButton: React.FC<LikeButtonProps> = ({ promptId, likesCount, likedByCurrentUser }) => {
   const [liked, setLiked] = useState(likedByCurrentUser)
-  console.log('likedByCurrentUser:', likedByCurrentUser) // Add this line
-  console.log('liked:', liked)
   // get current user from session
   const { data: session } = useSession()
   const router = useRouter()
