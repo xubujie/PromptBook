@@ -21,52 +21,32 @@ export default function IndexPage(props: InferGetServerSidePropsType<typeof getS
   const [prompts, setPrompts] = useState(props.data)
   const [searchQuery, setSearchQuery] = useState('')
   const [category, setCategory] = useState('all' as 'all' | 'image' | 'language')
-  const [order, setOrder] = useState('recent' as 'recent' | 'weekly' | 'monthly')
-  const apiUrl = '/api/prompts'
+  const [order, setOrder] = useState('recent' as 'recent' | 'all' | 'weekly' | 'monthly')
+  const apiUrl = `/api/prompts?q=${searchQuery}&t=${category}&orderBy=${order}`
   const handleSearch = useCallback(async (query: string) => {
     setSearchQuery(query)
   }, [])
 
   const handleSelect = useCallback(async (category: string, order: string) => {
     setCategory(category as 'all' | 'image' | 'language')
-    setOrder(order as 'recent' | 'weekly' | 'monthly')
+    setOrder(order as 'recent' | 'all' | 'weekly' | 'monthly')
   }, [])
 
   useEffect(() => {
     const fetchPrompts = async () => {
-      const data = await fetcher(`${apiUrl}?q=${searchQuery}&t=${category}&limit=20`)
+      const data = await fetcher(`${apiUrl}&limit=20`)
       setPrompts(data)
     }
     fetchPrompts()
-  }, [searchQuery, category, order])
+  }, [searchQuery, category, order, apiUrl])
 
   return (
     <Layout>
       <div className='flex flex-col mx-auto w-3/4 md:w-1/3'>
-        {/* <div className='tabs tabs-boxed justify-between'>
-          <a
-            className={`tab w-1/3 ${searchType === 'all' ? 'tab-active' : null}`}
-            onClick={() => setSearchType('all')}
-          >
-            All
-          </a>
-          <a
-            className={`tab w-1/3 ${searchType === 'image' ? 'tab-active' : null}`}
-            onClick={() => setSearchType('image')}
-          >
-            Image
-          </a>
-          <a
-            className={`tab w-1/3 ${searchType === 'language' ? 'tab-active' : null}`}
-            onClick={() => setSearchType('language')}
-          >
-            Language
-          </a>
-        </div> */}
         <SearchBar onSearch={handleSearch} />
         <Selecter onSelect={handleSelect} />
       </div>
-      <PromptList data={prompts} apiUrl={apiUrl} searchQuery={searchQuery} category={category} />
+      <PromptList data={prompts} apiUrl={apiUrl} />
     </Layout>
   )
 }

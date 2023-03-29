@@ -35,6 +35,7 @@ const Selecter: React.FC<Props> = ({ onSelect }) => {
       <select className='select select-bordered w-1/3' value={order} onChange={handleOrderChange}>
         <option disabled>Order by</option>
         <option value='recent'>Most recent</option>
+        <option value='all'>All likes</option>
         <option value='weekly'>Weekly likes</option>
         <option value='monthly'>Monthly likes</option>
       </select>

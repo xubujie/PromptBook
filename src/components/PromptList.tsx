@@ -8,12 +8,10 @@ import PromptCard from './PromptCard'
 interface Props {
   apiUrl: string
   data: any
-  searchQuery: string
-  category: 'all' | 'image' | 'language'
 }
 
-export default function PromptList({ apiUrl, data, searchQuery, category }: Props) {
-  const [prompts, setPrompts] = useState([])
+export default function PromptList({ apiUrl, data }: Props) {
+  const [prompts, setPrompts] = useState<Prompt[]>([])
   const [hasMore, setHasMore] = useState(true)
 
   useEffect(() => {
@@ -23,7 +21,7 @@ export default function PromptList({ apiUrl, data, searchQuery, category }: Prop
 
   const fetchMorePrompts = async () => {
     const start = prompts.length
-    const data = await fetcher(`${apiUrl}?q=${searchQuery}&t=${category}&start=${start}&limit=20`)
+    const data = await fetcher(`${apiUrl}&start=${start}&limit=20`)
     if (data.length === 0) {
       setHasMore(false)
     }
