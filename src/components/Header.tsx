@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import SwitchTheme from '@/components/SwitchTheme'
 
@@ -12,8 +13,9 @@ export default function Header() {
     <header className='flex'>
       <div className='navbar bg-base-100 justify-between items-center'>
         <div>
-          <Link href='/' className='bg-primary text-white text-2xl font-semibold'>
-            PromptBook
+          <Link href='/' className='flex items-center space-x-2'>
+            <Image src='/logo.png' width={50} height={50} alt='logo'></Image>
+            <span className='text-xl'>PromptBook</span>
           </Link>
         </div>
         <div className='flex-none gap-4 items-center justify-center'>

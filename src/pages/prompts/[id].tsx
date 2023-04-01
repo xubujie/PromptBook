@@ -1,33 +1,52 @@
 import React from 'react'
+import axios from 'axios'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import Layout from '@/components/Layout'
 import LikeButton from '@/components/LikeButton'
 import ShareButton from '@/components/ShareButton'
-import EditButton from '@/components/EditButton'
 import CommentForm from '@/components/CommentForm'
 import { InferGetServerSidePropsType } from 'next'
 import { GetServerSideProps } from 'next'
 import fetcher from '@/lib/fetcher'
 import { useSession } from 'next-auth/react'
+import Link from 'next/link'
 
 interface Props {
   prompt: Prompt
+  initialComments: Comment[]
 }
 
 const PromptDetail: React.FC<Props> = ({
   prompt,
+  comments: initialComments,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data: session } = useSession()
   const isAuthor = session?.user && session?.user?.email === prompt.authorEmail
   const router = useRouter()
+  const [comments, setComments] = useState<Comment[]>(initialComments)
 
-  const handleEdit = () => {
-    // Add logic to edit the prompt (e.g., navigate to an edit page)
+  useEffect(() => {
+    setComments(initialComments)
+  }, [initialComments])
+
+  const handleSubmitComment = async (comment: string) => {
+    if (!session) {
+      router.push('/api/auth/signin')
+    }
+    try {
+      const response = await axios.post(`/api/prompts/${prompt.id}/comments`, {
+        content: comment,
+        authorEmail: session?.user?.email,
+      })
+      const newComment = response.data
+      setComments((prevComments) => [...prevComments, newComment])
+    } catch (error) {
+      console.error(error)
+    }
   }
-  const handleCommentSubmit = (content: string) => {
-    // Add logic to submit the comment (e.g., call API to save the comment)
-  }
+
   if (router.isFallback) {
     return <div>Loading...</div>
   }
@@ -44,7 +63,7 @@ const PromptDetail: React.FC<Props> = ({
             <div className='mb-8'>
               <Image
                 src={prompt.image}
-                alt={prompt.title}
+                alt={prompt.id}
                 width={imgWidth}
                 height={imgHeight}
                 className='rounded'
@@ -62,9 +81,37 @@ const PromptDetail: React.FC<Props> = ({
             <ShareButton />
           </div>
         </div>
-        {isAuthor && <EditButton onClick={handleEdit} />}
+        {isAuthor && (
+          <Link
+            href={`/edit/${prompt.id}`}
+            className='btn btn-secondary text-white font-bold py-2 px-4 rounded'
+          >
+            Edit Prompt
+          </Link>
+        )}
+        <div>
+          {comments.length > 0 &&
+            comments.map((comment: Comment) => (
+              <div key={comment.id}>
+                <div className='chat chat-start'>
+                  <div className='chat-image avatar'>
+                    <div className='w-10 rounded-full'>
+                      <img src={comment.author?.image} />
+                    </div>
+                  </div>
+                  <div className='chat-header'>
+                    {comment.author?.name}
+                    <time className='text-xs opacity-50 ml-2'>
+                      {new Date(comment.createdAt).toLocaleString()}
+                    </time>
+                  </div>
+                  <div className='chat-bubble'>{comment.content}</div>
+                </div>
+              </div>
+            ))}
+        </div>
         <div className='my-8'>
-          <CommentForm onSubmit={handleCommentSubmit} />
+          <CommentForm onSubmit={handleSubmitComment} />
         </div>
       </div>
     </Layout>
@@ -91,7 +138,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       notFound: true,
     }
   }
-  console.log('prompt', prompt)
   return {
     props: {
       prompt,

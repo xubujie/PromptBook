@@ -2,7 +2,6 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import { useState, useEffect } from 'react'
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
 import fetcher from '@/lib/fetcher'
-import { CARD_WIDTH } from '@/config/config'
 import PromptCard from './PromptCard'
 
 interface Props {
@@ -48,10 +47,7 @@ export default function PromptList({ apiUrl, data }: Props) {
           <Masonry gutter='15px'>
             {prompts &&
               prompts.map((item: any) => (
-                <div
-                  key={item.id}
-                  className={`card ${CARD_WIDTH} bg-netural shadow-xl items-center`}
-                >
+                <div key={item.id}>
                   <PromptCard {...item} />
                 </div>
               ))}

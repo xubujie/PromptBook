@@ -113,3 +113,8 @@ model UserFollow {
   createdAt    DateTime @default(now())
 }
 
+model Model {
+  id Int @id @default(autoincrement())
+  name String
+  createdAt DateTime @default(now())
+}

@@ -8,7 +8,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const comments = await prisma.comment.findMany({
         where: { promptId: String(id) },
-        orderBy: { createdAt: 'desc' },
+        include: {
+          author: {
+            select: {
+              name: true,
+              image: true,
+            },
+          },
+        },
+        orderBy: { createdAt: 'asc' },
       })
 
       res.status(200).json(comments)
@@ -21,15 +29,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const newComment = await prisma.comment.create({
         data: {
+          promptId: String(id),
           content,
-          author: { connect: { email: authorEmail } },
-          prompt: { connect: { id: String(id) } },
+          authorEmail,
+        },
+        include: {
+          author: true,
         },
       })
 
       res.status(200).json(newComment)
     } catch (error) {
-      res.status(500).json({ error: 'Failed to create comment' })
+      res.status(500).json({ error: `Failed to create comment with ${error}` })
     }
   } else {
     res.status(405).json({ error: 'Method not allowed' })

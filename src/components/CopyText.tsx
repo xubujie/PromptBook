@@ -22,7 +22,7 @@ const CopyText: React.FC<CopyTextProps> = ({ text }) => {
 
   return (
     <div className='flex items-center'>
-      <div className='tooltip' data-tip='Copy'>
+      <div className='tooltip' data-tip='Copy Prompt'>
         <button onClick={copyToClipboard}>
           <svg
             xmlns='http://www.w3.org/2000/svg'
@@ -40,7 +40,7 @@ const CopyText: React.FC<CopyTextProps> = ({ text }) => {
           </svg>
         </button>
       </div>
-      {isCopied && <span className='text-green-500 ml-2'>Prompt Copied!</span>}
+      {isCopied && <span className='text-green-500 ml-2'>&#10003;</span>}
     </div>
   )
 }
