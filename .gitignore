@@ -2,6 +2,7 @@
 
 /requests
 /data
+/prisma/seed.ts
 
 # dependencies
 /node_modules
