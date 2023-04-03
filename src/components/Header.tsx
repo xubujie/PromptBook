@@ -40,7 +40,13 @@ export default function Header() {
             <div className='dropdown dropdown-end'>
               <label tabIndex={0} className='btn btn-ghost btn-circle avatar'>
                 {session.user.image && (
-                  <img src={`${session?.user?.image}`} className='w-10 rounded-full' />
+                  <Image
+                    src={`${session?.user?.image}`}
+                    width={100}
+                    height={100}
+                    alt={`${session?.user?.name}`}
+                    className='rounded-full w-10'
+                  />
                 )}
               </label>
               <ul
@@ -48,12 +54,12 @@ export default function Header() {
                 className='mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-40'
               >
                 <li>
-                  <a href='/favorite' className='justify-between'>
+                  <Link href='/favorite' className='justify-between'>
                     My favorite
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href={`/api/auth/signout`}
                     onClick={(e) => {
                       e.preventDefault()
@@ -61,7 +67,7 @@ export default function Header() {
                     }}
                   >
                     Logout
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>

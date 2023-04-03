@@ -9,7 +9,7 @@ import LanguagePromptForm from '@/components/LanguagePromptForm'
 const EditPrompt: React.FC = (props) => {
   const router = useRouter()
   const { id } = router.query
-  const [prompt, setPrompt] = useState(null)
+  const [prompt, setPrompt] = useState<Prompt | null>(null)
 
   useEffect(() => {
     const fetchPrompt = async () => {

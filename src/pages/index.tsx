@@ -32,7 +32,6 @@ export default function IndexPage(props: InferGetServerSidePropsType<typeof getS
     setOrder(order as 'recent' | 'all' | 'weekly' | 'monthly')
   }, [])
 
-  console.log('apiUrl', apiUrl)
   useEffect(() => {
     const fetchPrompts = async () => {
       const data = await fetcher(`${apiUrl}&limit=20`)

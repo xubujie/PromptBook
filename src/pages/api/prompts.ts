@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { getServerSession } from 'next-auth'
 import { authOptions } from './auth/[...nextauth]'
 
-function getDateRange(timeframe) {
+function getDateRange(timeframe: string) {
   const now = new Date()
   let startDate = new Date(now)
 

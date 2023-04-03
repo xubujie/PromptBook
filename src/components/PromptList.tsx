@@ -20,7 +20,7 @@ export default function PromptList({ apiUrl, data }: Props) {
 
   const fetchMorePrompts = async () => {
     const start = prompts.length
-    const data = await fetcher(`${apiUrl}&start=${start}&limit=20`)
+    const data = await fetcher(`${apiUrl}?&start=${start}&limit=20`)
     if (data.length === 0) {
       setHasMore(false)
     }

@@ -27,8 +27,8 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   theme: {
-    colorScheme: 'dark',
-    logo: '/images/logo-color.png',
+    colorScheme: 'auto',
+    logo: '/logo.png',
   },
   adapter: PrismaAdapter(primsadb),
   callbacks: {

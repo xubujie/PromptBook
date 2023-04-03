@@ -1,4 +1,5 @@
 import CommentForm from './CommentForm'
+import Image from 'next/image'
 
 interface Props {
   comments: Comment[]
@@ -13,10 +14,14 @@ const Comment: React.FC<Props> = ({ comments, onSubmit }) => {
           comments.map((comment: Comment) => (
             <div key={comment.id}>
               <div className='chat chat-start'>
-                <div className='chat-image avatar'>
-                  <div className='w-10 rounded-full'>
-                    <img src={comment.author?.image} />
-                  </div>
+                <div className='chat-image avatar w-10'>
+                  <Image
+                    src={comment.author?.image}
+                    alt={comment.author?.name}
+                    width={100}
+                    height={100}
+                    className='rounded-full'
+                  />
                 </div>
                 <div className='chat-header'>
                   {comment.author?.name}
