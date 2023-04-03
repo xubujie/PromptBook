@@ -7,11 +7,7 @@ import fetcher from '@/lib/fetcher'
 import Selecter from '@/components/Selecter'
 
 export const getServerSideProps = async (context: NextPageContext) => {
-  const data = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/prompts?limit=20`, {
-    headers: {
-      cookie: context.req?.headers.cookie || '',
-    },
-  }).then((response) => response.json())
+  const data = await fetcher(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/prompts?limit=20`)
   return {
     props: { data },
   }
