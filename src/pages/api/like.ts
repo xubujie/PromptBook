@@ -18,12 +18,17 @@ export default async function handle(req: NextApiRequest, res: NextApiResponse) 
           createdAt: 'desc',
         },
         include: {
-          prompt: true,
+          prompt: {
+            include: {
+              likes: true,
+            },
+          },
         },
       })
       const prompts = likes.map((like) => ({
         ...like.prompt,
         likedByCurrentUser: true,
+        likesCount: like.prompt.likes.length,
       }))
       res.status(200).json(prompts)
     } catch (error) {

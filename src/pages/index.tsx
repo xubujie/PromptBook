@@ -7,7 +7,7 @@ import fetcher from '@/lib/fetcher'
 import Selecter from '@/components/Selecter'
 
 export const getServerSideProps = async (context: NextPageContext) => {
-  const data = await fetch('http://localhost:3000/api/prompts?limit=20', {
+  const data = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/prompts?limit=20`, {
     headers: {
       cookie: context.req?.headers.cookie || '',
     },
@@ -32,14 +32,17 @@ export default function IndexPage(props: InferGetServerSidePropsType<typeof getS
     setOrder(order as 'recent' | 'all' | 'weekly' | 'monthly')
   }, [])
 
+  console.log('apiUrl', apiUrl)
   useEffect(() => {
     const fetchPrompts = async () => {
       const data = await fetcher(`${apiUrl}&limit=20`)
       setPrompts(data)
+      console.log('data', data)
     }
     fetchPrompts()
   }, [searchQuery, category, order, apiUrl])
 
+  console.log('prompts', prompts)
   return (
     <Layout>
       <div className='flex flex-col mx-auto w-3/4 md:w-1/3'>

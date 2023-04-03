@@ -20,7 +20,7 @@ const ShareButton: React.FC = () => {
 
   useOnClickOutside(ref, () => setShowTooltip(false))
 
-  const urlToShare = 'https://localhost:3000' // Replace with the URL you want to share
+  const urlToShare = process.env.NEXT_PUBLIC_API_BASE_URL || '' // Replace with the URL you want to share
 
   return (
     <div className='flex relative' ref={ref}>

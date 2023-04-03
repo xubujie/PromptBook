@@ -15,16 +15,13 @@ const CommentForm: React.FC<CommentFormProps> = ({ onSubmit }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className='flex items-center justify-center space-x-4'>
       <textarea
-        className='w-full h-24 p-2 rounded border border-gray-300'
+        className='textarea w-full h-12 rounded border border-gray-300'
         value={content}
         onChange={(e) => setContent(e.target.value)}
       />
-      <button
-        className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2'
-        type='submit'
-      >
+      <button className='btn btn-primary text-white font-bold py-2 px-4 rounded' type='submit'>
         Post Comment
       </button>
     </form>

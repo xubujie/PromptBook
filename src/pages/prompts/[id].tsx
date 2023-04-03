@@ -4,14 +4,14 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import Layout from '@/components/Layout'
-import LikeButton from '@/components/LikeButton'
-import ShareButton from '@/components/ShareButton'
-import CommentForm from '@/components/CommentForm'
+import CardIcons from '@/components/CardIcons'
+import Comment from '@/components/Comment'
 import { InferGetServerSidePropsType } from 'next'
 import { GetServerSideProps } from 'next'
 import fetcher from '@/lib/fetcher'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
+import Avatar from '@/components/Avatar'
 
 interface Props {
   prompt: Prompt
@@ -26,7 +26,12 @@ const PromptDetail: React.FC<Props> = ({
   const isAuthor = session?.user && session?.user?.email === prompt.authorEmail
   const router = useRouter()
   const [comments, setComments] = useState<Comment[]>(initialComments)
+  const likedByCurrentUser = !!prompt?.likes?.find(
+    (like: any) => like.userEmail === session?.user?.email,
+  )
 
+  console.log('prompt', prompt)
+  console.log('likedByCurrentUser', likedByCurrentUser)
   useEffect(() => {
     setComments(initialComments)
   }, [initialComments])
@@ -53,65 +58,95 @@ const PromptDetail: React.FC<Props> = ({
 
   const imgWidth = prompt.imageWidth / 2 || 600
   const imgHeight = prompt.imageHeight / 2 || 400
+  const promptContent = () => {
+    if (prompt.type === 'image' && prompt.image) {
+      return (
+        <div className='container flex flex-col items-center justify-center mx-auto mb-10 md:space-x-10 md:flex-row md:items-start'>
+          <Image
+            src={prompt.image}
+            alt={prompt.id}
+            width={imgWidth}
+            height={imgHeight}
+            priority={false}
+            className='container md:w-1/2 mb-5'
+          />
+          <div className='card-body container flex flex-col space-y-5 md:w-1/2'>
+            <h2 className='card-title link-hover'>{prompt?.title}</h2>
+            <div className='flex justify-between items-center w-full mb-2'>
+              <Avatar image={prompt.author.image} name={prompt.author.name} />
+              <CardIcons
+                prompt={prompt.prompt}
+                id={prompt.id}
+                likesCount={prompt.likesCount}
+                likedByCurrentUser={likedByCurrentUser}
+              />
+            </div>
+
+            <div className='card-text'>
+              <div className='badge text-lg'>Prompt:</div>
+              {' ' + prompt.prompt}
+            </div>
+            {prompt.negativePrompt && (
+              <div className='card-text'>
+                <div className='badge text-lg'>Other Params:</div>
+                {' ' + prompt.negativePrompt}
+              </div>
+            )}
+            {isAuthor && (
+              <Link
+                href={`/edit/${prompt.id}`}
+                className='btn btn-secondary text-white font-bold py-2 px-4 rounded w-full md:w-1/3 self-end'
+              >
+                Edit Prompt
+              </Link>
+            )}
+          </div>
+        </div>
+      )
+    } else if (prompt.type === 'language') {
+      return (
+        <div className='container card-body'>
+          <div className='flex justify-between items-center w-full mb-2'>
+            <Avatar image={prompt.author.image} name={prompt.author.name} />
+            <CardIcons
+              prompt={prompt.prompt}
+              id={prompt.id}
+              likesCount={prompt.likesCount}
+              likedByCurrentUser={likedByCurrentUser}
+            />
+          </div>
+          <h2 className='card-title link-hover text-2xl'>{prompt.title}</h2>
+          <div className='card-text mt-2 '>
+            <div className='badge text-lg'>Prompt:</div>
+            {' ' + prompt.prompt}
+          </div>
+          {isAuthor && (
+            <Link
+              href={`/edit/${prompt.id}`}
+              className='btn btn-secondary text-white font-bold py-2 px-4 rounded w-full md:w-1/6 self-end'
+            >
+              Edit Prompt
+            </Link>
+          )}
+        </div>
+      )
+    }
+  }
 
   return (
     <Layout>
-      <div className='container mx-auto max-w-6xl my-20 px-4'>
-        <h1 className='text-4xl font-bold mb-4'>{prompt.title}</h1>
-        <div className='bg-white shadow rounded-lg p-8'>
-          {prompt.type === 'image' && prompt.image && (
-            <div className='mb-8'>
-              <Image
-                src={prompt.image}
-                alt={prompt.id}
-                width={imgWidth}
-                height={imgHeight}
-                className='rounded'
-              />
-            </div>
+      <div className='container flex-col px-4 mx-auto'>
+        {promptContent()}
+        <div className='px-8 text-xl font-serif'>Comments:</div>
+        <div className='px-8 divider'></div>
+        <div className='mt-auto'>
+          {session ? (
+            <Comment comments={comments} onSubmit={handleSubmitComment} />
+          ) : (
+            <Link href={'/api/auth/signin'} className='link-secondary px-8'>
+              SignIn to Comment
+            </Link>
           )}
-          <div className='badge'>Prompt:</div>
-          <p className='text-gray-600 text-lg mb-8'>{prompt.prompt}</p>
-          <div className='flex justify-between'>
-            <LikeButton
-              promptId={prompt.id}
-              likesCount={prompt.likesCount}
-              likedByCurrentUser={prompt.likedByCurrentUser}
-            />
-            <ShareButton />
-          </div>
-        </div>
-        {isAuthor && (
-          <Link
-            href={`/edit/${prompt.id}`}
-            className='btn btn-secondary text-white font-bold py-2 px-4 rounded'
-          >
-            Edit Prompt
-          </Link>
-        )}
-        <div>
-          {comments.length > 0 &&
-            comments.map((comment: Comment) => (
-              <div key={comment.id}>
-                <div className='chat chat-start'>
-                  <div className='chat-image avatar'>
-                    <div className='w-10 rounded-full'>
-                      <img src={comment.author?.image} />
-                    </div>
-                  </div>
-                  <div className='chat-header'>
-                    {comment.author?.name}
-                    <time className='text-xs opacity-50 ml-2'>
-                      {new Date(comment.createdAt).toLocaleString()}
-                    </time>
-                  </div>
-                  <div className='chat-bubble'>{comment.content}</div>
-                </div>
-              </div>
-            ))}
-        </div>
-        <div className='my-8'>
-          <CommentForm onSubmit={handleSubmitComment} />
         </div>
       </div>
     </Layout>

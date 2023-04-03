@@ -140,7 +140,7 @@ const ImagePromptForm: React.FC<Props> = ({ prompt, mode = 'create' }) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className='container flex flex-col items-center justify-center mx-auto mb-10 md:space-x-10 md:flex-row md:items-start '
+      className='container flex flex-col items-center justify-center mx-auto mb-10 md:space-x-10 md:flex-row md:items-start'
     >
       <div className='container w-1/2 mb-5'>
         <input
@@ -182,7 +182,7 @@ const ImagePromptForm: React.FC<Props> = ({ prompt, mode = 'create' }) => {
         <textarea
           {...register('nprompt', { required: false, maxLength: 500 })}
           className='textarea textarea-secondary w-full h-40'
-          placeholder='Negative prompt (optional)'
+          placeholder='Other params (e.g, negative prompt) (optional)'
         />
         <select
           {...register('model', { required: 'model is required' })}

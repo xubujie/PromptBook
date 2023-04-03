@@ -2,7 +2,6 @@ import prisma from '@/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  
   // Handle API logic here
   const id = req.query.id as string
 
@@ -14,13 +13,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(200).json(prompt)
     return
   }
-if (req.method === 'GET') {
+  if (req.method === 'GET') {
     const prompt = await prisma.prompt.findUnique({
       where: { id },
       include: {
         likes: {
           select: {
             userEmail: true,
+          },
+        },
+        author: {
+          select: {
+            name: true,
+            image: true,
           },
         },
       },
@@ -34,7 +39,6 @@ if (req.method === 'GET') {
     const promptData = {
       ...prompt,
       likesCount: prompt.likes.length,
-      likedByCurrentUser: false,
     }
 
     res.status(200).json(promptData)

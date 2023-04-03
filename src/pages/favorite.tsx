@@ -4,7 +4,7 @@ import { InferGetServerSidePropsType, NextPageContext } from 'next'
 import PromptList from '@/components/PromptList'
 
 export const getServerSideProps = async (context: NextPageContext) => {
-  const data = await fetch('http://localhost:3000/api/like?limit=20', {
+  const data = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/like?limit=20`, {
     headers: {
       cookie: context.req?.headers.cookie || '',
     },

@@ -42,7 +42,7 @@ export default function PromptList({ apiUrl, data }: Props) {
         </div>
       }
     >
-      <div className='container my-20 mx-auto max-x-6xl'>
+      <div className='container my-10 mx-auto max-x-6xl'>
         <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 3, 900: 4 }}>
           <Masonry gutter='15px'>
             {prompts &&

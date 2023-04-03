@@ -12,26 +12,28 @@ const PromptCard: React.FC<Prompt> = (props) => {
     if (props.type === 'image' && props.image && props.imageHeight && props.imageWidth) {
       const height = (props.imageHeight / props.imageWidth) * 300
       return (
-        <Link href={`/prompts/${props.id}`} passHref>
-          <div className='relative block w-full group'>
-            <Image
-              src={props.image}
-              alt={props.id}
-              width={IMAGE_WIDTH}
-              height={height}
-              priority={false}
-            />
-            <div className='absolute inset-0 object-cover w-full h-full group-hover:opacity-50 group-hover:bg-gray-900 p-5'>
-              <div className='absolute bottom-0 left-0 right-0 p-5 transition-all transform translate-y-8 opacity-0 group-hover:opacity-100 group-hover:translate-y-0'>
-                <div className='w-64 whitespace-normal break-words'>
-                  <p className='text-white text-sm line-clamp-4'>{props.prompt}</p>
+        <>
+          <Link href={`/prompts/${props.id}`} passHref>
+            <div className='relative block w-full group'>
+              <Image
+                src={props.image}
+                alt={props.id}
+                width={IMAGE_WIDTH}
+                height={height}
+                priority={false}
+              />
+              <div className='absolute inset-0 object-cover w-full h-full group-hover:opacity-50 group-hover:bg-gray-900 p-5'>
+                <div className='absolute bottom-0 left-0 right-0 p-5 transition-all transform translate-y-8 opacity-0 group-hover:opacity-100 group-hover:translate-y-0'>
+                  <div className='w-64 whitespace-normal break-words'>
+                    <p className='text-white text-sm line-clamp-4'>{props.prompt}</p>
+                  </div>
+                  <div className='badge badge-secondary'>{props.model}</div>
                 </div>
-                <div className='badge badge-secondary'>{props.model}</div>
               </div>
             </div>
-          </div>
+          </Link>
           <div className='flex justify-between items-center w-full px-2 py-4'>
-            <div className='text-sm'>{props.author?.name}</div>
+            <div className='text-sm'></div>
             <CardIcons
               prompt={props.prompt}
               id={props.id}
@@ -39,7 +41,7 @@ const PromptCard: React.FC<Prompt> = (props) => {
               likedByCurrentUser={props.likedByCurrentUser}
             />
           </div>
-        </Link>
+        </>
       )
     } else if (props.type === 'language') {
       return (
@@ -49,7 +51,7 @@ const PromptCard: React.FC<Prompt> = (props) => {
           </Link>
           <ShowMoreText text={props.prompt} maxLength={MAX_TEXT_LENGTH} />
           <div className='flex justify-between items-center w-full -mb-2'>
-            <div className='text-sm'>{props.author?.name}</div>
+            <div className='text-sm'></div>
             <CardIcons
               prompt={props.prompt}
               id={props.id}

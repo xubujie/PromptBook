@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { getSession } from 'next-auth/react'
+import { getServerSession } from 'next-auth'
+import { authOptions } from './auth/[...nextauth]'
 
 function getDateRange(timeframe) {
   const now = new Date()
@@ -14,14 +15,14 @@ function getDateRange(timeframe) {
       startDate.setMonth(now.getMonth() - 1)
       break
     default:
-      startDate.setFullYear(2020)
+      startDate.setMonth(now.getMonth() - 12)
   }
 
   return startDate
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const session = await getSession({ req })
+  const session = await getServerSession(req, res, authOptions)
   const start = parseInt(req.query.start as string) || 0
   const limit = parseInt(req.query.limit as string) || 20
   const searchQuery = req.query.q ? (req.query.q as string).toLowerCase() : ''
@@ -61,7 +62,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       if (aLikes > bLikes) return -1
       if (aLikes < bLikes) return 1
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      return 0
     }
   })
 

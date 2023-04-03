@@ -5,8 +5,8 @@ interface Props {
   onSelect: (category: string, order: string) => void
 }
 const Selecter: React.FC<Props> = ({ onSelect }) => {
-  const [category, setCategory] = useState('All')
-  const [order, setOrder] = useState('Most recent')
+  const [category, setCategory] = useState('all')
+  const [order, setOrder] = useState('recent')
 
   const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedCategory = event.target.value
