@@ -33,12 +33,12 @@ export default function PromptList({ apiUrl, data }: Props) {
       hasMore={hasMore}
       loader={
         <div className='flex justify-center mt-10'>
-          <p className='text-white text-xl'> Loading more...</p>
+          <p className='text-xl'> Loading more...</p>
         </div>
       }
       endMessage={
         <div className='flex justify-center mt-10'>
-          <p className='text-white text-xl'> Nothing more to show...</p>
+          <p className='text-xl'> Nothing more to show...</p>
         </div>
       }
     >

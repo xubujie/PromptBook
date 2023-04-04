@@ -28,7 +28,7 @@ const ShowMoreText: React.FC<ShowMoreTextProps> = ({
         {displayText}
         {text.length > maxLength && (
           <button className='link link-secondary' onClick={toggleTruncate}>
-            {' ' + toggleLabel}
+            {'  ' + toggleLabel}
           </button>
         )}
       </p>

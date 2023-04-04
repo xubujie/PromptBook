@@ -13,15 +13,17 @@ export default function Header() {
     <header className='flex'>
       <div className='navbar bg-base-100 justify-between items-center'>
         <div>
-          <Link href='/' className='flex items-center space-x-2'>
-            <Image src='/logo.png' width={50} height={50} alt='logo'></Image>
+          <Link href='/' className='flex items-center space-x-2 w-8 md:w-10'>
+            <Image src='/logo.png' width='100' height='100' alt='logo'></Image>
             <span className='text-xl'>PromptBook</span>
           </Link>
         </div>
         <div className='flex-none gap-4 items-center justify-center'>
-          <Link href='/new' className='rounded-md hover:text-secondary'>
-            + Prompt
-          </Link>
+          {session?.user && (
+            <Link href='/new' className='rounded-md hover:text-secondary'>
+              + Prompt
+            </Link>
+          )}
           <SwitchTheme />
           {!session && (
             <>
@@ -45,7 +47,7 @@ export default function Header() {
                     width={100}
                     height={100}
                     alt={`${session?.user?.name}`}
-                    className='rounded-full w-10'
+                    className='rounded-full w-8 md:w-10'
                   />
                 )}
               </label>

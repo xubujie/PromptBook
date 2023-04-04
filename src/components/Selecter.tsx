@@ -32,7 +32,11 @@ const Selecter: React.FC<Props> = ({ onSelect }) => {
         <option value='image'>Image</option>
         <option value='language'>Language</option>
       </select>
-      <select className='select select-bordered w-1/3' value={order} onChange={handleOrderChange}>
+      <select
+        className='select select-bordered w-1/2 md:w-1/3'
+        value={order}
+        onChange={handleOrderChange}
+      >
         <option disabled>Order by</option>
         <option value='recent'>Most recent</option>
         <option value='all'>All likes</option>
