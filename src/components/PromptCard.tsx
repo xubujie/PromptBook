@@ -1,11 +1,9 @@
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { IMAGE_WIDTH } from '@/config/config'
+import { IMAGE_WIDTH, MAX_TEXT_LENGTH, CARD_WIDTH } from '@/config/config'
 import ShowMoreText from './ShowMoreText'
-import { MAX_TEXT_LENGTH } from '@/config/config'
 import CardIcons from './CardIcons'
-import { CARD_WIDTH } from '@/config/config'
 
 const PromptCard: React.FC<Prompt> = (props) => {
   const promptContent = () => {

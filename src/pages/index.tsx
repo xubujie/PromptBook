@@ -1,12 +1,13 @@
 import Layout from '@/components/Layout'
 import React, { useState, useCallback, useEffect } from 'react'
-import { InferGetServerSidePropsType, NextPageContext } from 'next'
+import { InferGetServerSidePropsType } from 'next'
 import SearchBar from '@/components/SearchBar'
 import PromptList from '@/components/PromptList'
 import fetcher from '@/lib/fetcher'
 import Selecter from '@/components/Selecter'
+import useSWR from 'swr'
 
-export const getServerSideProps = async (context: NextPageContext) => {
+export const getServerSideProps = async () => {
   const data = await fetcher(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/prompts?limit=20`)
   return {
     props: { data },
@@ -14,7 +15,7 @@ export const getServerSideProps = async (context: NextPageContext) => {
 }
 
 export default function IndexPage(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const [prompts, setPrompts] = useState(props.data)
+  // const [prompts, setPrompts] = useState(props.data)
   const [searchQuery, setSearchQuery] = useState('')
   const [category, setCategory] = useState('all' as 'all' | 'image' | 'language')
   const [order, setOrder] = useState('recent' as 'recent' | 'all' | 'weekly' | 'monthly')
@@ -28,16 +29,13 @@ export default function IndexPage(props: InferGetServerSidePropsType<typeof getS
     setOrder(order as 'recent' | 'all' | 'weekly' | 'monthly')
   }, [])
 
-  useEffect(() => {
-    const fetchPrompts = async () => {
-      const data = await fetcher(`${apiUrl}&limit=20`)
-      setPrompts(data)
-      console.log('data', data)
-    }
-    fetchPrompts()
-  }, [searchQuery, category, order, apiUrl])
+  const { data, error } = useSWR(`${apiUrl}&limit=20`, fetcher)
+  const prompts = data || props.data
 
-  console.log('prompts', prompts)
+  if (error) {
+    return <div>Error occurred while fetching data</div>
+  }
+
   return (
     <Layout>
       <div className='flex flex-col mx-auto w-3/4 md:w-1/3'>

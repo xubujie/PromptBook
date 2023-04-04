@@ -1,8 +1,10 @@
 import InfiniteScroll from 'react-infinite-scroll-component'
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
 import fetcher from '@/lib/fetcher'
 import PromptCard from './PromptCard'
+import { log } from '@/lib/logger'
+import useSWRInfinite from 'swr/infinite'
 
 interface Props {
   apiUrl: string
@@ -10,27 +12,53 @@ interface Props {
 }
 
 export default function PromptList({ apiUrl, data }: Props) {
-  const [prompts, setPrompts] = useState<Prompt[]>([])
-  const [hasMore, setHasMore] = useState(true)
+  const getKey = (pageIndex: number, previousPageData: any) => {
+    if (previousPageData && !previousPageData.length) return null
+    return `${apiUrl}?&start=${pageIndex * 20}&limit=20`
+  }
+  const { data: fetchedData, error, size, setSize } = useSWRInfinite(getKey, fetcher)
+  const prompts = fetchedData ? [].concat(...fetchedData) : []
+  const isLoadingInitialData = !fetchedData && !error
+  const isEmpty = fetchedData?.length === 0
+  const isReachingEnd = isEmpty || (fetchedData && fetchedData[fetchedData.length - 1]?.length < 20)
+
+  const fetchMorePrompts = () => {
+    setSize(size + 1)
+  }
 
   useEffect(() => {
-    setPrompts(data)
-    setHasMore(true)
-  }, [data])
+    setSize(1)
+  }, [apiUrl, setSize])
 
-  const fetchMorePrompts = async () => {
-    const start = prompts.length
-    const data = await fetcher(`${apiUrl}?&start=${start}&limit=20`)
-    if (data.length === 0) {
-      setHasMore(false)
-    }
-    setPrompts((prompts) => [...prompts, ...data])
+  if (isLoadingInitialData) {
+    return (
+      <div className='flex justify-center mt-10'>
+        <p className='text-xl'> Loading...</p>
+      </div>
+    )
   }
+
+  if (error) {
+    return (
+      <div className='flex justify-center mt-10'>
+        <p className='text-xl'> Error while fetching data</p>
+      </div>
+    )
+  }
+
+  if (isEmpty) {
+    return (
+      <div className='flex justify-center mt-10'>
+        <p className='text-xl'> No data to show</p>
+      </div>
+    )
+  }
+  log('promts', prompts)
   return (
     <InfiniteScroll
       dataLength={prompts.length}
       next={fetchMorePrompts}
-      hasMore={hasMore}
+      hasMore={!isReachingEnd}
       loader={
         <div className='flex justify-center mt-10'>
           <p className='text-xl'> Loading more...</p>

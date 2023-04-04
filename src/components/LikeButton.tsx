@@ -1,7 +1,7 @@
 // src/somponents/LikeButton.tsx
 
 import axios from 'axios'
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 
@@ -12,25 +12,30 @@ interface LikeButtonProps {
 }
 
 const LikeButton: React.FC<LikeButtonProps> = ({ promptId, likesCount, likedByCurrentUser }) => {
-  const [count, SetCount] = useState(likesCount)
+  const [count, setCount] = useState(likesCount)
   const [liked, setLiked] = useState(likedByCurrentUser)
   // get current user from session
   const { data: session } = useSession()
   const router = useRouter()
-  const handleClick = async () => {
-    setLiked(!liked)
+  const handleClick = () => {
+    // setLiked(!liked)
     if (!session) {
       router.push('/api/auth/signin')
+      return
     }
-    if (!liked) {
+    handleLike()
+  }
+
+  const handleLike = useCallback(async () => {
+    if (!liked && session) {
       try {
         await axios.post('/api/like', {
           userEmail: session?.user?.email,
           promptId: promptId,
         })
-        SetCount(count + 1)
+        setCount(count + 1)
+        setLiked(true)
       } catch (error) {
-        console.log('Failed to add like:', error)
         setLiked(false)
       }
     } else {
@@ -41,13 +46,14 @@ const LikeButton: React.FC<LikeButtonProps> = ({ promptId, likesCount, likedByCu
             promptId: promptId,
           },
         })
-        SetCount(count - 1)
+        setCount(count - 1)
+        setLiked(false)
       } catch (error) {
-        console.log('Failed to remove like:', error)
         setLiked(true)
       }
     }
-  }
+  }, [liked, session, promptId, count])
+
   return (
     <div className='flex items-center justify-center'>
       <svg
